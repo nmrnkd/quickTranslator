@@ -3,6 +3,7 @@ name: CI Pipeline
 on:
   pull_request:
     branches:
+      - main  # main 브랜치로 PR 요청 시 실행(임시)
       - dev  # dev 브랜치로 PR 요청 시 실행
 
 jobs:
@@ -16,7 +17,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - name: Install dependencies
         run: yarn install
