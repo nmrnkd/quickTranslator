@@ -7719,7 +7719,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.8.1":
+"prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -7783,6 +7783,7 @@ __metadata:
     react: 18.3.1
     react-native: 0.76.5
     react-native-codegen: ^0.70.7
+    react-native-switch-selector: ^2.3.0
     react-test-renderer: 18.3.1
     typescript: 5.0.4
   languageName: unknown
@@ -7835,6 +7836,15 @@ __metadata:
     jscodeshift: ^0.14.0
     nullthrows: ^1.1.1
   checksum: dfbf05ea6c5bcdff09ed2288919d8270bdb8ab78a7a973f2dbd970e63357bdf9fee05d95a2c9bee3795a609332e5ca37f667384ebe1cca61e4cb8f81e5aeabba
+  languageName: node
+  linkType: hard
+
+"react-native-switch-selector@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "react-native-switch-selector@npm:2.3.0"
+  dependencies:
+    prop-types: ^15.7.2
+  checksum: 1b0447c84e2707a255f7143e4d8627efba7b842a9a5227c01b383778bcf90ecdace11289a6f27921cf236b0a83f766ca3ce68a964057ba8dbeb161bdfe649317
   languageName: node
   linkType: hard
 
