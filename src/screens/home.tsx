@@ -11,9 +11,8 @@ import NativeLocalStorage from '../../specs/NativeLocalStorage';
 import SwitchSelector from 'react-native-switch-selector'
 import Icon from '@react-native-vector-icons/ionicons';
 import textStyles from '../lib/styles/textStyles';
-import TranslationLayout from '../components/TranslationLayout';
 import ContainedButton from '../components/ContainedButton';
-import { InputType, ActionButtonsIconName } from '../types';
+import { InputType } from '../types';
 import ActionButtons from '../components/ActionButtons';
 import { palette } from '../lib/styles/colorPalette';
 import Dropdown from '@mustapha-ghlissi/react-native-select-picker';
