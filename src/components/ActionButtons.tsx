@@ -1,8 +1,8 @@
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import React from 'react'
 import Icon from '@react-native-vector-icons/ionicons'
 import { ActionButtonsIconName, IOType } from '../types';
-import IconButton from './IconButton';
+import { palette } from '../lib/styles/colorPalette';
 
 
 type ActionButtonsProps = {
@@ -20,20 +20,29 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({mode}) => {
   ]
 
   return (
-    <View style={{ flexDirection: 'row', backgroundColor: 'blue', flex: 1, alignItems: 'flex-end', margin: 16}}>
+    <View style={styles.container}>
     {
       buttons.map((item, index)=>{
         return(
           index < MAX_LENGTH &&
-            <IconButton 
+            <Icon 
               key={index}
-              icon={<Icon name={item.iconName} size={24} style={{padding: 8, paddingHorizontal: 12}} color={'#FFF'}/>}
-              onPress={()=>{}} />
+              name={item.iconName} 
+              size={24}
+              onPress={()=>{console.log('onPress')}}
+              style={{padding: 8, paddingHorizontal: 16}} 
+              color={palette.main} />
         )
       })
     }
   </View>
   )
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1, 
+    flexDirection: 'row',
+  }
+})
 
 export default ActionButtons

@@ -5,29 +5,34 @@
  * @format
  */
 
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import NativeLocalStorage from '../../specs/NativeLocalStorage';
 import SwitchSelector from 'react-native-switch-selector'
 import Icon from '@react-native-vector-icons/ionicons';
 import textStyles from '../lib/styles/textStyles';
-import IconButton from '../components/IconButton';
 import TranslationLayout from '../components/TranslationLayout';
-import TextIconButton from '../components/ContainedButton';
+import ContainedButton from '../components/ContainedButton';
 import { InputType, ActionButtonsIconName } from '../types';
 import ActionButtons from '../components/ActionButtons';
-import viewStyles from '../lib/styles/viewStyles';
 import { palette } from '../lib/styles/colorPalette';
+import Dropdown from '@mustapha-ghlissi/react-native-select-picker';
+import type { DropdownItem } from '@mustapha-ghlissi/react-native-select-picker';
+
+
+const DROPDOWN_BOX_SIZE = 100
 
 const Home: React.FC = () => {
+
+  const inputRef = useRef<TextInput | null>(null);
 
   const [inputType, setInputType] = useState<InputType>("Text") // 0: Text, 1: Voice
   const [inputText, setInputText] = useState<string>("")
   const [translatedText, setTranslatedText] = useState<string>("")
 
   const inputTypeOptions: { value: InputType, label: string, customIcon: JSX.Element}[] = [
-    { value: "Text", label: "", customIcon: <Icon name='text' size={20} color={inputType == "Text" ? palette.wh : palette.bl }/> },
-    { value: "Voice", label: "", customIcon: <Icon name='mic' size={20} color={inputType == "Voice" ? palette.wh : palette.bl }/> },
+    { value: "Text", label: "", customIcon: <Icon name='text' size={20} color={inputType == "Text" ? palette.bl3 : palette.wh }/> },
+    { value: "Voice", label: "", customIcon: <Icon name='mic' size={20} color={inputType == "Voice" ? palette.bl3 : palette.wh }/> },
   ];
 
   useEffect(()=>{
@@ -36,6 +41,7 @@ const Home: React.FC = () => {
   },[])
 
   const translate = (): void => {
+    inputRef.current?.blur()
     // 번역 api 호출
 
     // 번역 결과 setState 
@@ -47,110 +53,157 @@ const Home: React.FC = () => {
     setTranslatedText("")
   }
 
-  const Buttons: { iconName: ActionButtonsIconName, onPress: () => void }[] = [
-    { iconName: "volume-high", onPress: ()=>{}},
-    { iconName: "copy", onPress: ()=>{}},
-    { iconName: "bookmark", onPress: ()=>{}}
-  ]
+    const dropdownItems = [
+      { initialValue: "첫번째 dropdown의 디폴트 언어 코드" },
+      { initialValue: "두번째 dropdown의 디폴트 언어 코드" }
+    ]
 
+    const sampleItems: DropdownItem[] = [
+      {
+          label: '한국어',        
+          value: 1
+      },
+      {
+          label: 'English',
+          value: 2
+      }
+    ];
+  
   return (
-    <SafeAreaView style={styles.container}>
+    <Pressable 
+      style={styles.container} 
+      // 화면 여백 터치시 keyboard 내리기
+      onPress={()=>{inputRef.current?.blur()}}> 
+      
+      {/* 입력 */}
+      <SafeAreaView style={styles.topContainer}>  
+        {/* InputType 선택 */}
+        <View style={styles.selectorBox}>
+          <SwitchSelector 
+            initial={0}
+            options={inputTypeOptions} 
+            buttonColor={palette.main}
+            backgroundColor={palette.bl3}
+            style={{width: 110}}
+            onPress={(value: InputType)=>{setInputType(value)}} 
+            />
+        </View>
 
-      {/* InputType 선택 */}
-      <View style={styles.selectorBox}>
-        <SwitchSelector 
-          options={inputTypeOptions} 
-          onPress={(value: InputType)=>{setInputType(value)}} 
-          initial={0}
-          selectedColor={palette.wh}
-          textColor={palette.main}
-          buttonColor={palette.main}
-          borderColor={palette.main}
-          hasPadding
-          style={{width: 120}}
-          />
-      </View>
-
-      {/* 입/출력 창 */}
-      <View style={styles.translationBox}>
-        
-        {/* 입력창 */}
-        <TranslationLayout>
+        {/* 입/출력 창 */}
+        <View style={styles.translationBox}>
+          {/* 출/도착 언어 선택 */}
+          <View style={styles.languageField}>
+            {
+              dropdownItems.map((item, index)=>{
+                return (
+                  <React.Fragment key={index}>
+                  <Dropdown
+                    items={sampleItems}
+                    borderWidth={0}
+                    outlineColor={palette.line1}
+                    placeholder='언어 선택'
+                    icon={<Icon name="chevron-down" color={palette.wh} size={16}/>}
+                    onSelectChange={()=>{console.log('press')}}
+                    styles={{
+                      activeItem: {backgroundColor: palette.line3 },
+                      activeItemText: textStyles.body,
+                      dropdownItem: {backgroundColor: palette.wh },
+                      dropdownItemText: textStyles.body,
+                      dropdownList: {width: DROPDOWN_BOX_SIZE},
+                      inputContainer: {width: DROPDOWN_BOX_SIZE, height: 30},
+                      inputText: {color: palette.wh, fontSize: 14}
+                    }}
+                    />
+                    {
+                      index == 0 && 
+                        <Icon name="swap-horizontal" size={20} color={palette.wh}/>
+                    }
+                  </React.Fragment>
+                )
+              })
+            }
+          </View>
           {/* 입력 - 입력 필드 */}
           <View style={styles.textInputArea}> 
-            <TextInput 
+            <TextInput
+              multiline
+              ref={inputRef}
               value={inputText}
               onChangeText={(text: string)=>setInputText(text)} 
-              placeholder="텍스트를 입력하세요"
+              placeholder="번역할 텍스트를 입력하세요"
               placeholderTextColor={"#b1b1b1"}
-              style={textStyles.Title3}
+              style={[textStyles.Title3, {padding: 0, color: palette.main}]}
               onFocus={handleOnFocus}
+              // maxLength={} // 번역 글자수 제한 나중에 구현
               />
           </View>
 
           {/* 입력 - 하단 버튼 영역 */}
-          <View style={viewStyles.flexView}>  
+          <View style={styles.toolbar}>  
             <ActionButtons mode={"Input"}/>
-            <TextIconButton 
-                icon={<Icon name="arrow-forward" size={16} color={"#FFF"} style={{marginLeft: 4}}/>}
-                buttonStyle={{backgroundColor: palette.main, margin: 16}}
+            <ContainedButton 
+                icon={<Icon name="arrow-forward" size={14} color={palette.bl0} />}
+                buttonStyle={{backgroundColor: palette.main, paddingHorizontal: 12, paddingVertical: 4}}
                 text={"번역하기"}
                 textStyle={textStyles.body}
-                onPress={()=>{}}/>
+                onPress={translate}/>
           </View>
-        </TranslationLayout>
-            
-        {/* 공백 */}
-        <View style={styles.swapButtonBox} />       
+        </View>
+      </SafeAreaView>
 
-       {/* 출력 */}
-       <TranslationLayout>
-          <View style={styles.textInputArea}> 
-            <Text style={textStyles.body}>{translatedText}</Text>
-          </View>
-          {/* input: 음성 듣기, 복사 등 기능 + 번역 버튼 */}
-          <View style={viewStyles.flexView}>  
-            <ActionButtons mode={"Output"}/>
-          </View>
-       </TranslationLayout>
-      </View>
-    </SafeAreaView>
+
+      {/* 출력 */}
+      <SafeAreaView style={styles.bottomContainer}>
+        <View style={styles.textInputArea}> 
+          <Text style={[textStyles.body, {color: palette.main}]}>{translatedText}</Text>
+        </View>
+        {/* input: 음성 듣기, 복사 등 기능 + 번역 버튼 */}
+        {/* 입/출력 별로 위치, 구성 조정하고 출력때는 번역 결과 있을때만 show */}
+        <View style={styles.toolbar}>  
+          <ActionButtons mode={"Output"}/>
+        </View>
+      </SafeAreaView>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#98d7ae'
-    // backgroundColor: '#98a7ae'
-    // backgroundColor: '#91adad'
-    // backgroundColor: '#444444'
-    backgroundColor: '#333333'
+  },
+  topContainer: {
+    flex: 1,
+    backgroundColor: palette.bl6
+  },
+  bottomContainer: {
+    flex: 1,
+    backgroundColor: palette.bl3
   },
   selectorBox: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'lightblue',
-    paddingVertical: 8
+    paddingVertical: 8,
   },
   translationBox: {
     flex: 1,
-    backgroundColor: 'pink',
-  },
-  swapButtonBox: {
-    paddingVertical: 16,
-    backgroundColor: 'lightgreen',
-    alignItems: 'center'
   },
   languageField: {
-    backgroundColor: "lightyellow",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
     padding: 16,
   },
   textInputArea: {
     padding: 16,
     flex: 1
   },
-
+  toolbar: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderColor: palette.line2,
+    marginHorizontal: 16,
+    paddingVertical: 16,
+  },
 });
 
 export default Home;

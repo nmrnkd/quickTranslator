@@ -1,6 +1,5 @@
-import { View, Text, StyleSheet, Pressable, ViewProps, ViewStyle, TextStyle } from 'react-native'
+import { Text, StyleSheet, ViewStyle, TextStyle, TouchableOpacity } from 'react-native'
 import React from 'react'
-import Icon from '@react-native-vector-icons/ionicons'
 
 
 type ContainedButtonProps = {
@@ -14,12 +13,13 @@ type ContainedButtonProps = {
 const ContainedButton: React.FC<ContainedButtonProps> = ({icon, text, textStyle, buttonStyle, onPress}) => {
 
   return (
-    <Pressable 
+    <TouchableOpacity 
+      activeOpacity={0.5}
       style={[styles.defaultButtonStyle, buttonStyle]}
       onPress={onPress}>
-        <Text style={[textStyle]}>{text}</Text>
+        <Text style={[textStyle, {marginRight: 4}]}>{text}</Text>
         { icon }
-    </Pressable>
+    </TouchableOpacity>
   )
 }
 
