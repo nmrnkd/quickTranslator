@@ -12,7 +12,7 @@ import SwitchSelector from 'react-native-switch-selector'
 import Icon from '@react-native-vector-icons/ionicons';
 import textStyles from '../lib/styles/textStyles';
 import ContainedButton from '../components/ContainedButton';
-import { InputType } from '../types';
+import { InputType, IOType } from '../types';
 import ActionButtons from '../components/ActionButtons';
 import { palette } from '../lib/styles/colorPalette';
 import Dropdown from '@mustapha-ghlissi/react-native-select-picker';
@@ -39,12 +39,35 @@ const Home: React.FC = () => {
     // NativeLocalStorage.setLanguage('ja-JP')
   },[])
 
-  const translate = (): void => {
+  const translate = async(): Promise<void> => {
     inputRef.current?.blur()
-    // 번역 api 호출
 
-    // 번역 결과 setState 
-    setTranslatedText("번역 결과")
+    // 번역 api 호출    
+    const data = {
+      "text": [inputText],
+      "target_lang": "EN"
+    }
+
+
+    try {
+      const response = await fetch(`${process.env.DEEPL_URL}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `DeepL-Auth-Key ${process.env.DEEPL_API_KEY}`, 
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      setTranslatedText(result.translations[0].text);
+    } catch (error) {
+      setTranslatedText('Translation failed.');
+    }
   }
 
   const handleOnFocus = (): void => {
@@ -68,6 +91,10 @@ const Home: React.FC = () => {
       }
     ];
   
+  const handleOnPress = (mode: IOType) => {
+    const target = mode == "Input" ? inputText : translatedText
+    NativeLocalStorage.speak(target)
+  }
   return (
     <Pressable 
       style={styles.container} 
@@ -102,7 +129,7 @@ const Home: React.FC = () => {
                     outlineColor={palette.line1}
                     placeholder='언어 선택'
                     icon={<Icon name="chevron-down" color={palette.wh} size={16}/>}
-                    onSelectChange={()=>{console.log('press')}}
+                    onSelectChange={()=>{}} // 언어 선택시
                     styles={{
                       activeItem: {backgroundColor: palette.line3 },
                       activeItemText: textStyles.body,
@@ -139,7 +166,7 @@ const Home: React.FC = () => {
 
           {/* 입력 - 하단 버튼 영역 */}
           <View style={styles.toolbar}>  
-            <ActionButtons mode={"Input"}/>
+            <ActionButtons mode={"Input"} propFunc={handleOnPress}/>
             <ContainedButton 
                 icon={<Icon name="arrow-forward" size={14} color={palette.bl0} />}
                 buttonStyle={{backgroundColor: palette.main, paddingHorizontal: 12, paddingVertical: 4}}
@@ -159,7 +186,7 @@ const Home: React.FC = () => {
         {/* input: 음성 듣기, 복사 등 기능 + 번역 버튼 */}
         {/* 입/출력 별로 위치, 구성 조정하고 출력때는 번역 결과 있을때만 show */}
         <View style={styles.toolbar}>  
-          <ActionButtons mode={"Output"}/>
+          <ActionButtons mode={"Output"} propFunc={handleOnPress}/>
         </View>
       </SafeAreaView>
     </Pressable>

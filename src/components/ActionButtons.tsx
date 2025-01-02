@@ -7,14 +7,15 @@ import { palette } from '../lib/styles/colorPalette';
 
 type ActionButtonsProps = {
   mode: IOType // text | voice
+  propFunc(mode: IOType): void
 };
 
-const ActionButtons: React.FC<ActionButtonsProps> = ({mode}) => {
+const ActionButtons: React.FC<ActionButtonsProps> = ({mode, propFunc}) => {
   
   const MAX_LENGTH = mode == "Input" ? 2 : 3
 
   const buttons: { iconName: ActionButtonsIconName, onPress: () => void }[] = [
-    { iconName: "volume-high", onPress: ()=>{}},
+    { iconName: "volume-high", onPress: ()=>propFunc(mode)},
     { iconName: "copy", onPress: ()=>{}},
     { iconName: "bookmark", onPress: ()=>{}}
   ]
@@ -29,7 +30,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({mode}) => {
               key={index}
               name={item.iconName} 
               size={24}
-              onPress={()=>{console.log('onPress')}}
+              onPress={item.onPress}
               style={{padding: 8, paddingHorizontal: 16}} 
               color={palette.main} />
         )
