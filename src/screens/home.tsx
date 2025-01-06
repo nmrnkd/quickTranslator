@@ -131,7 +131,7 @@ const Home: React.FC = () => {
               onChangeText={(text: string)=>setInputText(text)} 
               placeholder="번역할 텍스트를 입력하세요"
               placeholderTextColor={"#b1b1b1"}
-              style={[textStyles.Title3, {padding: 0, color: palette.main}]}
+              style={[textStyles.Title3, { color: palette.main}]}
               onFocus={handleOnFocus}
               // maxLength={} // 번역 글자수 제한 나중에 구현
               />
