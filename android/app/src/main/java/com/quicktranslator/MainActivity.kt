@@ -1,4 +1,4 @@
-package com.quicktranslator
+package com.quickTranslator
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
