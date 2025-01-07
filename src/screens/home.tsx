@@ -15,11 +15,6 @@ import ContainedButton from '../components/ContainedButton';
 import { InputType, IOType } from '../types';
 import ActionButtons from '../components/ActionButtons';
 import { palette } from '../lib/styles/colorPalette';
-import Dropdown from '@mustapha-ghlissi/react-native-select-picker';
-import type { DropdownItem } from '@mustapha-ghlissi/react-native-select-picker';
-
-
-const DROPDOWN_BOX_SIZE = 100
 
 const Home: React.FC = () => {
 
@@ -74,22 +69,6 @@ const Home: React.FC = () => {
     setInputText("")
     setTranslatedText("")
   }
-
-    const dropdownItems = [
-      { initialValue: "첫번째 dropdown의 디폴트 언어 코드" },
-      { initialValue: "두번째 dropdown의 디폴트 언어 코드" }
-    ]
-
-    const sampleItems: DropdownItem[] = [
-      {
-          label: '한국어',        
-          value: 1
-      },
-      {
-          label: 'English',
-          value: 2
-      }
-    ];
   
   const handleOnPress = (mode: IOType) => {
     const target = mode == "Input" ? inputText : translatedText
@@ -119,35 +98,7 @@ const Home: React.FC = () => {
         <View style={styles.translationBox}>
           {/* 출/도착 언어 선택 */}
           <View style={styles.languageField}>
-            {
-              dropdownItems.map((item, index)=>{
-                return (
-                  <React.Fragment key={index}>
-                  <Dropdown
-                    items={sampleItems}
-                    borderWidth={0}
-                    outlineColor={palette.line1}
-                    placeholder='언어 선택'
-                    icon={<Icon name="chevron-down" color={palette.wh} size={16}/>}
-                    onSelectChange={()=>{}} // 언어 선택시
-                    styles={{
-                      activeItem: {backgroundColor: palette.line3 },
-                      activeItemText: textStyles.body,
-                      dropdownItem: {backgroundColor: palette.wh },
-                      dropdownItemText: textStyles.body,
-                      dropdownList: {width: DROPDOWN_BOX_SIZE},
-                      inputContainer: {width: DROPDOWN_BOX_SIZE, height: 30},
-                      inputText: {color: palette.wh, fontSize: 14}
-                    }}
-                    />
-                    {
-                      index == 0 && 
-                        <Icon name="swap-horizontal" size={20} color={palette.wh}/>
-                    }
-                  </React.Fragment>
-                )
-              })
-            }
+
           </View>
           {/* 입력 - 입력 필드 */}
           <View style={styles.textInputArea}> 
