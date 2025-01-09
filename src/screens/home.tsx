@@ -7,7 +7,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
-import NativeLocalStorage from '../../specs/NativeLocalStorage';
+import NativeTTSModule from '../../specs/NativeTTSModule';
 import SwitchSelector from 'react-native-switch-selector'
 import Icon from '@react-native-vector-icons/ionicons';
 import textStyles from '../lib/styles/textStyles';
@@ -48,7 +48,7 @@ const Home: React.FC = () => {
 
   useEffect(()=>{
     // 기본 언어 설정
-    // NativeLocalStorage.setLanguage('ja-JP')
+    // NativeTTSModule.setLanguage('ja-JP')
   },[])
 
   const translate = async(): Promise<void> => {
@@ -88,8 +88,16 @@ const Home: React.FC = () => {
   }
   
   const handleOnPress = (mode: IOType) => {
-    const target = mode == "Input" ? inputText : translatedText
-    NativeLocalStorage.speak(target)
+    const target = 
+      mode == "Input" ? {
+        language: languageSettings.source.value,
+        text: inputText 
+      } : 
+      {
+        language: languageSettings.target.value,
+        text: translatedText 
+      }
+    NativeTTSModule.speak(target.language, target.text)
   }
 
   const handleOnChange = (selected: LanguageEntry & { _index?: number }, key: string) => {

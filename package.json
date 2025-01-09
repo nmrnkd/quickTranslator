@@ -10,11 +10,11 @@
     "test": "jest"
   },
   "codegenConfig": {
-    "name": "NativeLocalStorageSpec",
+    "name": "NativeTTSModuleSpec",
     "type": "modules",
     "jsSrcsDir": "specs",
     "android": {
-      "javaPackageName": "com.nativelocalstorage"
+      "javaPackageName": "com.nativettsmodule"
     }
   },
   "dependencies": {
