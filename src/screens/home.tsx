@@ -12,9 +12,17 @@ import SwitchSelector from 'react-native-switch-selector'
 import Icon from '@react-native-vector-icons/ionicons';
 import textStyles from '../lib/styles/textStyles';
 import ContainedButton from '../components/ContainedButton';
-import { InputType, IOType } from '../types';
+import { InputType, IOType, LanguageEntry } from '../types';
 import ActionButtons from '../components/ActionButtons';
 import { palette } from '../lib/styles/colorPalette';
+import { Dropdown } from 'react-native-element-dropdown';
+import { languages } from '../data/languageCode';
+
+
+type LanguageSettings = {
+  source: LanguageEntry;
+  target: LanguageEntry;
+};
 
 const Home: React.FC = () => {
 
@@ -22,12 +30,21 @@ const Home: React.FC = () => {
 
   const [inputType, setInputType] = useState<InputType>("Text") // 0: Text, 1: Voice
   const [inputText, setInputText] = useState<string>("")
+  const [languageSettings, setLanguageSettings] = useState<LanguageSettings>({
+    source: { deepl: "KO", value: "ko-KR", label: "Korean" }, // 초기값
+    target: { deepl: "EN", value: "en-US", label: "English" }, // 초기값
+  });
   const [translatedText, setTranslatedText] = useState<string>("")
 
   const inputTypeOptions: { value: InputType, label: string, customIcon: JSX.Element}[] = [
     { value: "Text", label: "", customIcon: <Icon name='text' size={20} color={inputType == "Text" ? palette.bl3 : palette.wh }/> },
     { value: "Voice", label: "", customIcon: <Icon name='mic' size={20} color={inputType == "Voice" ? palette.bl3 : palette.wh }/> },
   ];
+  
+  const dropdownKey = [
+    { initialValue: "ko-KR", type: "source"},
+    { initialValue: "en-US", type: "target"}
+  ]
 
   useEffect(()=>{
     // 기본 언어 설정
@@ -40,9 +57,9 @@ const Home: React.FC = () => {
     // 번역 api 호출    
     const data = {
       "text": [inputText],
-      "target_lang": "EN"
+      // "source_lang": languageSettings.source.deepl,
+      "target_lang": languageSettings.target.deepl
     }
-
 
     try {
       const response = await fetch(`${process.env.DEEPL_URL}`, {
@@ -74,6 +91,13 @@ const Home: React.FC = () => {
     const target = mode == "Input" ? inputText : translatedText
     NativeLocalStorage.speak(target)
   }
+
+  const handleOnChange = (selected: LanguageEntry & { _index?: number }, key: string) => {
+    // Dropdown의 onChange에서 _index를 포함하여 반환하는데 state에 저장할때는 _index 값 빼고
+    const { _index, ...data } = selected
+    setLanguageSettings((prev)=>({...prev, [key]: data}))
+  };
+
   return (
     <Pressable 
       style={styles.container} 
@@ -98,7 +122,32 @@ const Home: React.FC = () => {
         <View style={styles.translationBox}>
           {/* 출/도착 언어 선택 */}
           <View style={styles.languageField}>
-
+            {
+              dropdownKey.map((item, index)=> 
+               {
+                return (
+                  <React.Fragment key={index}>
+                    <Dropdown
+                      data={languages}
+                      value={item.initialValue}
+                      labelField="label"
+                      valueField="value"
+                      onChange={(value)=>handleOnChange(value, item.type)}
+                      style={{width: 100}}
+                      maxHeight={300}
+                      placeholderStyle={styles.dropdownPlaceholderStyle}
+                      selectedTextStyle={styles.dropdownSelectedTextStyle}
+                      iconStyle={styles.dropdownIconStyle}
+                      itemContainerStyle={styles.dropdownitemContainerStyle}
+                      containerStyle={styles.dropdownContainerStyle}
+                    />
+                    {
+                      !index && <Icon name="swap-horizontal" color={"#FFF"} size={18}/>
+                    }
+                  </React.Fragment>
+                )
+              })
+            }
           </View>
           {/* 입력 - 입력 필드 */}
           <View style={styles.textInputArea}> 
@@ -181,6 +230,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     paddingVertical: 16,
   },
+  dropdownPlaceholderStyle: {color: 'white'},
+  dropdownSelectedTextStyle: {color: 'white', textAlign: 'center'},
+  dropdownIconStyle: {tintColor: '#FFF'},
+  dropdownitemContainerStyle: {borderRadius: 8},
+  dropdownContainerStyle: { width: 150, marginTop: 16, marginLeft: -16, borderRadius: 8}
 });
 
 export default Home;

@@ -1,0 +1,27 @@
+import type { LanguageEntry } from "../types";
+
+export const languages: LanguageEntry[] = [
+  { deepl: "AR", value: "ar-SA", label: "아랍어" },
+  { deepl: "CS", value: "cs-CZ", label: "체코어" },
+  { deepl: "DA", value: "da-DK", label: "덴마크어" },
+  { deepl: "DE", value: "de-DE", label: "독일어" },
+  { deepl: "EL", value: "el-GR", label: "그리스어" },
+  { deepl: "EN-US", value: "en-US", label: "영어" },
+  { deepl: "ES", value: "es-ES", label: "스페인어" },
+  { deepl: "FI", value: "fi-FI", label: "핀란드어" },
+  { deepl: "FR", value: "fr-FR", label: "프랑스어" },
+  { deepl: "HU", value: "hu-HU", label: "헝가리어" },
+  { deepl: "IT", value: "it-IT", label: "이탈리아어" },
+  { deepl: "JA", value: "ja-JP", label: "일본어" },
+  { deepl: "KO", value: "ko-KR", label: "한국어" },
+  { deepl: "NL", value: "nl-NL", label: "네덜란드어" },
+  { deepl: "PL", value: "pl-PL", label: "폴란드어" },
+  { deepl: "PT-BR", value: "pt-BR", label: "포르투갈어" },
+  { deepl: "RO", value: "ro-RO", label: "루마니아어" },
+  { deepl: "RU", value: "ru-RU", label: "러시아어" },
+  { deepl: "SK", value: "sk-SK", label: "슬로바키아어" },
+  { deepl: "SV", value: "sv-SE", label: "스웨덴어" },
+  { deepl: "TR", value: "tr-TR", label: "터키어" },
+  { deepl: "ZH-HANS", value: "zh-CN", label: "중국어(간체)" },
+  { deepl: "ZH-HANT", value: "zh-TW", label: "중국어(번체)" },
+];
