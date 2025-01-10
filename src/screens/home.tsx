@@ -140,6 +140,8 @@ const Home: React.FC = () => {
                       value={item.initialValue}
                       labelField="label"
                       valueField="value"
+                      // 출력 언어 선택시 input 유무 여부에 따라 번역 함수 호출해야함.
+                      // 입력 언어 선택시 현재 선택된 언어와 같은지 비교 후 input 내용 없애야함 (?)
                       onChange={(value)=>handleOnChange(value, item.type)}
                       style={{width: 100}}
                       maxHeight={300}
