@@ -17,7 +17,7 @@ import ActionButtons from '../components/ActionButtons';
 import { palette } from '../lib/styles/colorPalette';
 import { Dropdown } from 'react-native-element-dropdown';
 import { languages } from '../data/languageCode';
-
+import Clipboard from '@react-native-clipboard/clipboard';
 
 type LanguageSettings = {
   source: LanguageEntry;
@@ -87,19 +87,33 @@ const Home: React.FC = () => {
     setTranslatedText("")
   }
   
-  const handleOnPress = (mode: IOType) => {
-    const target = 
-      mode == "Input" ? {
-        language: languageSettings.source.value,
-        text: inputText 
-      } : 
-      {
-        language: languageSettings.target.value,
-        text: translatedText 
-      }
-    NativeTTSModule.speak(target.language, target.text)
-  }
+  const handleOnAction = (actionType:  string, type: IOType) => {
 
+    const target = 
+    type == "Input" ? {
+      language: languageSettings.source.value,
+      text: inputText 
+    } : 
+    {
+      language: languageSettings.target.value,
+      text: translatedText 
+    }
+
+    switch(actionType) {
+      case "tts" : 
+        NativeTTSModule.speak(target.language, target.text)
+        break;
+      case "copy" : 
+      console.log('tes')
+        Clipboard.setString(target.text)
+        break;
+      case "bookmark" : 
+        // async에 저장
+        break;
+    }
+
+  }
+  
   const handleOnChange = (selected: LanguageEntry & { _index?: number }, key: string) => {
     // Dropdown의 onChange에서 _index를 포함하여 반환하는데 state에 저장할때는 _index 값 빼고
     const { _index, ...data } = selected
@@ -174,7 +188,7 @@ const Home: React.FC = () => {
 
           {/* 입력 - 하단 버튼 영역 */}
           <View style={styles.toolbar}>  
-            <ActionButtons mode={"Input"} propFunc={handleOnPress}/>
+            <ActionButtons type={"Input"} onAction={handleOnAction}/>
             <ContainedButton 
                 icon={<Icon name="arrow-forward" size={14} color={palette.bl0} />}
                 buttonStyle={{backgroundColor: palette.main, paddingHorizontal: 12, paddingVertical: 4}}
@@ -192,7 +206,7 @@ const Home: React.FC = () => {
           {/* input: 음성 듣기, 복사 등 기능 + 번역 버튼 */}
           {/* 입/출력 별로 위치, 구성 조정하고 출력때는 번역 결과 있을때만 show */}
           <View style={styles.toolbar}>  
-            <ActionButtons mode={"Output"} propFunc={handleOnPress}/>
+            <ActionButtons type={"Output"} onAction={handleOnAction}/>
           </View>
         </View>
       </SafeAreaView>

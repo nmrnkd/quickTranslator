@@ -6,17 +6,17 @@ import { palette } from '../lib/styles/colorPalette';
 
 
 type ActionButtonsProps = {
-  mode: IOType // text | voice
-  propFunc(mode: IOType): void
+  type: IOType // text | voice
+  onAction(actionType: string, type: IOType): void
 };
 
-const ActionButtons: React.FC<ActionButtonsProps> = ({mode, propFunc}) => {
+const ActionButtons: React.FC<ActionButtonsProps> = ({type, onAction}) => {
   
-  const MAX_LENGTH = mode == "Input" ? 2 : 3
+  const MAX_LENGTH = type == "Input" ? 2 : 3
 
   const buttons: { iconName: ActionButtonsIconName, onPress: () => void }[] = [
-    { iconName: "volume-high", onPress: ()=>propFunc(mode)},
-    { iconName: "copy", onPress: ()=>{}},
+    { iconName: "volume-high", onPress: ()=>{onAction("tts", type)}},
+    { iconName: "copy", onPress: ()=>{onAction("copy", type)}},
     { iconName: "bookmark", onPress: ()=>{}}
   ]
 
