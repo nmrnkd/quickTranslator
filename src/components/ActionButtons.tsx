@@ -29,7 +29,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({mode, propFunc}) => {
             <Icon 
               key={index}
               name={item.iconName} 
-              size={24}
+              size={20}
               onPress={item.onPress}
               style={{padding: 8, paddingHorizontal: 16}} 
               color={palette.main} />

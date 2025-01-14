@@ -31,8 +31,8 @@ const Home: React.FC = () => {
   const [inputType, setInputType] = useState<InputType>("Text") // 0: Text, 1: Voice
   const [inputText, setInputText] = useState<string>("")
   const [languageSettings, setLanguageSettings] = useState<LanguageSettings>({
-    source: { deepl: "KO", value: "ko-KR", label: "Korean" }, // 초기값
-    target: { deepl: "EN", value: "en-US", label: "English" }, // 초기값
+    source: { deepl: "KO", value: "ko-KR", label: "한국어" }, // 초기값
+    target: { deepl: "EN", value: "en-US", label: "영어" }, // 초기값
   });
   const [translatedText, setTranslatedText] = useState<string>("")
 
@@ -111,54 +111,52 @@ const Home: React.FC = () => {
       style={styles.container} 
       // 화면 여백 터치시 keyboard 내리기
       onPress={()=>{inputRef.current?.blur()}}> 
-      
-      {/* 입력 */}
-      <SafeAreaView style={styles.topContainer}>  
+      <SafeAreaView style={{flex: 1}}>
         {/* InputType 선택 */}
         <View style={styles.selectorBox}>
           <SwitchSelector 
             initial={0}
             options={inputTypeOptions} 
             buttonColor={palette.main}
-            backgroundColor={palette.bl3}
+            backgroundColor={palette.bl5}
             style={{width: 110}}
             onPress={(value: InputType)=>{setInputType(value)}} 
             />
         </View>
 
-        {/* 입/출력 창 */}
+        {/* 출/도착 언어 선택 */}
+        <View style={styles.languageField}>
+          {
+            dropdownKey.map((item, index)=> 
+              {
+              return (
+                <React.Fragment key={index}>
+                  <Dropdown
+                    data={languages}
+                    value={item.initialValue}
+                    labelField="label"
+                    valueField="value"
+                    // 출력 언어 선택시 input 유무 여부에 따라 번역 함수 호출해야함.
+                    // 입력 언어 선택시 현재 선택된 언어와 같은지 비교 후 input 내용 없애야함 (?)
+                    onChange={(value)=>handleOnChange(value, item.type)}
+                    style={{width: 100}}
+                    maxHeight={300}
+                    placeholderStyle={styles.dropdownPlaceholderStyle}
+                    selectedTextStyle={styles.dropdownSelectedTextStyle}
+                    iconStyle={styles.dropdownIconStyle}
+                    itemContainerStyle={styles.dropdownitemContainerStyle}
+                    containerStyle={styles.dropdownContainerStyle}
+                  />
+                  {
+                    !index && <Icon name="swap-horizontal" color={"#FFF"} size={18}/>
+                  }
+                </React.Fragment>
+              )
+            })
+          }
+        </View>
         <View style={styles.translationBox}>
-          {/* 출/도착 언어 선택 */}
-          <View style={styles.languageField}>
-            {
-              dropdownKey.map((item, index)=> 
-               {
-                return (
-                  <React.Fragment key={index}>
-                    <Dropdown
-                      data={languages}
-                      value={item.initialValue}
-                      labelField="label"
-                      valueField="value"
-                      // 출력 언어 선택시 input 유무 여부에 따라 번역 함수 호출해야함.
-                      // 입력 언어 선택시 현재 선택된 언어와 같은지 비교 후 input 내용 없애야함 (?)
-                      onChange={(value)=>handleOnChange(value, item.type)}
-                      style={{width: 100}}
-                      maxHeight={300}
-                      placeholderStyle={styles.dropdownPlaceholderStyle}
-                      selectedTextStyle={styles.dropdownSelectedTextStyle}
-                      iconStyle={styles.dropdownIconStyle}
-                      itemContainerStyle={styles.dropdownitemContainerStyle}
-                      containerStyle={styles.dropdownContainerStyle}
-                    />
-                    {
-                      !index && <Icon name="swap-horizontal" color={"#FFF"} size={18}/>
-                    }
-                  </React.Fragment>
-                )
-              })
-            }
-          </View>
+          <Text style={styles.language}>{languageSettings.source.label}</Text>
           {/* 입력 - 입력 필드 */}
           <View style={styles.textInputArea}> 
             <TextInput
@@ -185,18 +183,17 @@ const Home: React.FC = () => {
                 onPress={translate}/>
           </View>
         </View>
-      </SafeAreaView>
 
-
-      {/* 출력 */}
-      <SafeAreaView style={styles.bottomContainer}>
-        <View style={styles.textInputArea}> 
-          <Text style={[textStyles.body, {color: palette.main}]}>{translatedText}</Text>
-        </View>
-        {/* input: 음성 듣기, 복사 등 기능 + 번역 버튼 */}
-        {/* 입/출력 별로 위치, 구성 조정하고 출력때는 번역 결과 있을때만 show */}
-        <View style={styles.toolbar}>  
-          <ActionButtons mode={"Output"} propFunc={handleOnPress}/>
+        <View style={styles.translationBox}>
+        <Text style={styles.language}>{languageSettings.target.label}</Text>
+          <View style={styles.textInputArea}> 
+            <Text style={[textStyles.body, {color: palette.main}]}>{translatedText}</Text>
+          </View>
+          {/* input: 음성 듣기, 복사 등 기능 + 번역 버튼 */}
+          {/* 입/출력 별로 위치, 구성 조정하고 출력때는 번역 결과 있을때만 show */}
+          <View style={styles.toolbar}>  
+            <ActionButtons mode={"Output"} propFunc={handleOnPress}/>
+          </View>
         </View>
       </SafeAreaView>
     </Pressable>
@@ -206,13 +203,6 @@ const Home: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  topContainer: {
-    flex: 1,
-    backgroundColor: palette.bl6
-  },
-  bottomContainer: {
-    flex: 1,
     backgroundColor: palette.bl3
   },
   selectorBox: {
@@ -220,14 +210,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 8,
   },
-  translationBox: {
-    flex: 1,
-  },
   languageField: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    padding: 16,
+    marginTop: 16,
+    marginBottom: 32,
+    marginHorizontal: 16
+  },
+  translationBox: {
+    backgroundColor: palette.bl5,
+    height: 240,
+    margin: 16,
+    marginTop: 0,
+    borderRadius: 8
+  },
+  language: {
+    color: palette.wh,
+    fontSize: 16,
+    fontWeight: 500,
+    marginLeft: 16,
+    marginTop: 24,
   },
   textInputArea: {
     padding: 16,
@@ -235,13 +238,11 @@ const styles = StyleSheet.create({
   },
   toolbar: {
     flexDirection: 'row',
-    borderTopWidth: 1,
-    borderColor: palette.line2,
     marginHorizontal: 16,
     paddingVertical: 16,
   },
-  dropdownPlaceholderStyle: {color: 'white'},
-  dropdownSelectedTextStyle: {color: 'white', textAlign: 'center'},
+  dropdownPlaceholderStyle: {color: 'white',},
+  dropdownSelectedTextStyle: {color: 'white', textAlign: 'center',  fontSize: 18, fontWeight: '500'},
   dropdownIconStyle: {tintColor: '#FFF'},
   dropdownitemContainerStyle: {borderRadius: 8},
   dropdownContainerStyle: { width: 150, marginTop: 16, marginLeft: -16, borderRadius: 8}
