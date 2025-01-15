@@ -1,11 +1,4 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import NativeTTSModule from '../../specs/NativeTTSModule';
 import SwitchSelector from 'react-native-switch-selector'
@@ -18,6 +11,7 @@ import { palette } from '../lib/styles/colorPalette';
 import { Dropdown } from 'react-native-element-dropdown';
 import { languages } from '../data/languageCode';
 import Clipboard from '@react-native-clipboard/clipboard';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type LanguageSettings = {
   source: LanguageEntry;
@@ -45,11 +39,6 @@ const Home: React.FC = () => {
     { initialValue: "ko-KR", type: "source"},
     { initialValue: "en-US", type: "target"}
   ]
-
-  useEffect(()=>{
-    // 기본 언어 설정
-    // NativeTTSModule.setLanguage('ja-JP')
-  },[])
 
   const translate = async(): Promise<void> => {
     inputRef.current?.blur()
@@ -87,33 +76,35 @@ const Home: React.FC = () => {
     setTranslatedText("")
   }
   
-  const handleOnAction = (actionType:  string, type: IOType) => {
+  const handleOnAction = async(actionType: string, type: IOType) => {
 
-    const target = 
-    type == "Input" ? {
-      language: languageSettings.source.value,
-      text: inputText 
-    } : 
-    {
-      language: languageSettings.target.value,
-      text: translatedText 
+    let data = {
+      "Input": {
+        language: languageSettings.source.value,
+        text: inputText 
+      },
+      "Output": {
+        language: languageSettings.target.value,
+        text: translatedText 
+      }
     }
 
     switch(actionType) {
       case "tts" : 
-        NativeTTSModule.speak(target.language, target.text)
+        NativeTTSModule.speak(data[type].language, data[type].text)
         break;
       case "copy" : 
-      console.log('tes')
-        Clipboard.setString(target.text)
+        Clipboard.setString(data[type].text)
         break;
       case "bookmark" : 
-        // async에 저장
+        const existingData = await AsyncStorage.getItem('@BOOKMARK');
+        const parseData = existingData ? JSON.parse(existingData) : [];
+        parseData.push(data);
+        await AsyncStorage.setItem('@BOOKMARK', JSON.stringify(parseData))
         break;
     }
-
   }
-  
+
   const handleOnChange = (selected: LanguageEntry & { _index?: number }, key: string) => {
     // Dropdown의 onChange에서 _index를 포함하여 반환하는데 state에 저장할때는 _index 값 빼고
     const { _index, ...data } = selected

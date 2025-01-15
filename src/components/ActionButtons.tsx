@@ -1,13 +1,12 @@
 import { StyleSheet, View } from 'react-native'
 import React from 'react'
 import Icon from '@react-native-vector-icons/ionicons'
-import { ActionButtonsIconName, IOType } from '../types';
+import { ActionButtonsIconName, ActionType, IOType } from '../types';
 import { palette } from '../lib/styles/colorPalette';
-
 
 type ActionButtonsProps = {
   type: IOType // text | voice
-  onAction(actionType: string, type: IOType): void
+  onAction(actionType: ActionType, type: IOType): void
 };
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({type, onAction}) => {
@@ -17,7 +16,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({type, onAction}) => {
   const buttons: { iconName: ActionButtonsIconName, onPress: () => void }[] = [
     { iconName: "volume-high", onPress: ()=>{onAction("tts", type)}},
     { iconName: "copy", onPress: ()=>{onAction("copy", type)}},
-    { iconName: "bookmark", onPress: ()=>{}}
+    { iconName: "bookmark", onPress: ()=>{onAction("bookmark", type)}}
   ]
 
   return (
